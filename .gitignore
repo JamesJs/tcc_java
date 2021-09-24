@@ -33,5 +33,5 @@ build/
 .vscode/
 
 #config
-./src/main/java/com/ufsj/projetovaca
-/src/main/java/com/ufsj/projetovaca
+./src/main/java/com/ufsj/projetovaca/config
+/src/main/java/com/ufsj/projetovaca/config
