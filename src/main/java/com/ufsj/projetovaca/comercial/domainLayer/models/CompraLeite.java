@@ -37,4 +37,8 @@ public class CompraLeite {
 	
 	@Embedded
 	private CompraLeiteComprador comprador;
+	
+	public long getCompradorId(){
+		return this.getComprador().getIdComprador();
+	}
 }
