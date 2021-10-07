@@ -48,7 +48,7 @@ public abstract class ACrudController<Input,Output,Entidade> {
 		
 		if(opEntidade.isEmpty()) {
 			
-			return erroUsuarioNaoEncontrado();
+			return erroUsuarioNaoEncontrado("Usuário não encontrado");
 		
 		}
 		
@@ -74,8 +74,8 @@ public abstract class ACrudController<Input,Output,Entidade> {
 	}
 	
 	
-	public ResponseEntity<?> erroUsuarioNaoEncontrado(){
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); 
+	public ResponseEntity<?> erroUsuarioNaoEncontrado(String e){
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e); 
 	}
 	
 	
@@ -83,7 +83,7 @@ public abstract class ACrudController<Input,Output,Entidade> {
 		
 		System.err.println(e);
 		
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.toString());
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.toString());
 	}
 	
 	public <G,K> void copiarAtributos(G destino,K origem,String id) {

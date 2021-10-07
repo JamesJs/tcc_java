@@ -1,5 +1,6 @@
 package com.ufsj.projetovaca.fazenda.applicationLayer.applicationService;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
@@ -9,8 +10,7 @@ import org.springframework.stereotype.Service;
 import com.ufsj.projetovaca.fazenda.applicationLayer.exceptions.NotFoundWithId;
 import com.ufsj.projetovaca.fazenda.apresentationLayer.DTO.FuncaoInput;
 import com.ufsj.projetovaca.fazenda.apresentationLayer.DTO.FuncaoOutput;
-import com.ufsj.projetovaca.fazenda.apresentationLayer.utils.AssemblerAdapter;
-import com.ufsj.projetovaca.fazenda.apresentationLayer.utils.Conversores;
+import com.ufsj.projetovaca.fazenda.apresentationLayer.assemblers.FuncaoAssembler;
 import com.ufsj.projetovaca.fazenda.domainLayer.models.Funcao;
 import com.ufsj.projetovaca.fazenda.domainLayer.repositories.FuncaoRepository;
 @Service
@@ -19,18 +19,15 @@ public class CadastroFuncao {
 	@Autowired
 	FuncaoRepository funcaoRepository;
 	
-	
-	Conversores<FuncaoInput, FuncaoOutput, Funcao> conversores = 
-			new Conversores<FuncaoInput, FuncaoOutput, Funcao>();
-	
-	AssemblerAdapter<Funcao, FuncaoInput> conversorEntidade = conversores.criarConversorEntidade(Funcao.class);
-	
-	AssemblerAdapter<FuncaoOutput, Funcao> conversorOutput = conversores.criarConversorOutput(FuncaoOutput.class);
+	@Autowired
+	FuncaoAssembler funcaoAssembler;
 	
 	public FuncaoOutput salvar(FuncaoInput funcaoInput) {
-		Funcao funcao = conversorEntidade.converterUnitario(funcaoInput);
+		Funcao funcao = funcaoAssembler.converterEntidade(funcaoInput);
 		
-		FuncaoOutput funcaoOutput = conversorOutput.converterUnitario(funcaoRepository.save(funcao));
+		funcao.ativarFuncao();
+		
+		FuncaoOutput funcaoOutput = funcaoAssembler.converterOutput(funcaoRepository.save(funcao));
 		
 		return funcaoOutput;
 	}
@@ -46,7 +43,7 @@ public class CadastroFuncao {
 		
 		funcao.setAtivado(!funcao.isAtivado());
 		
-		FuncaoOutput funcaoOutput = conversorOutput.converterUnitario(funcaoRepository.save(funcao));
+		FuncaoOutput funcaoOutput = funcaoAssembler.converterOutput(funcaoRepository.save(funcao));
 		
 		return funcaoOutput;
 	}
@@ -59,16 +56,25 @@ public class CadastroFuncao {
 			throw new NotFoundWithId("Não encontrada função com esse id");
 		}
 		
-		Funcao novaFuncao = conversorEntidade.converterUnitario(funcaoInput);
+		Funcao novaFuncao = funcaoAssembler.converterEntidade(funcaoInput);
 		
 		Funcao funcao = opFuncao.get();
 		
-		BeanUtils.copyProperties(novaFuncao,funcao);
+		BeanUtils.copyProperties(novaFuncao,funcao,"id","ativado");
 					
 		funcao.setId(id);
 		
-		FuncaoOutput funcaoOutput = conversorOutput.converterUnitario(funcaoRepository.save(funcao));
+		FuncaoOutput funcaoOutput = funcaoAssembler.converterOutput(funcaoRepository.save(funcao));
 		
 		return funcaoOutput;
+	}
+	public List<FuncaoOutput> listar() {
+		
+		List<Funcao> funcoes = funcaoRepository.findAll();
+		
+		List<FuncaoOutput> funcoesOutput = funcaoAssembler.converterColecaoOutput(funcoes);
+		
+		return funcoesOutput;
+		
 	}
 }

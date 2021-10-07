@@ -6,15 +6,14 @@ import java.util.Optional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.ufsj.projetovaca.fazenda.applicationLayer.exceptions.NotFoundCochoType;
 import com.ufsj.projetovaca.fazenda.applicationLayer.exceptions.CochoNaMesmaLocalizacao;
 import com.ufsj.projetovaca.fazenda.applicationLayer.exceptions.NotFoundWithId;
 import com.ufsj.projetovaca.fazenda.apresentationLayer.DTO.CochoInput;
 import com.ufsj.projetovaca.fazenda.apresentationLayer.DTO.CochoOutput;
-import com.ufsj.projetovaca.fazenda.apresentationLayer.DTO.FazendaInput;
-import com.ufsj.projetovaca.fazenda.apresentationLayer.DTO.FazendaOutput;
-import com.ufsj.projetovaca.fazenda.apresentationLayer.utils.AssemblerAdapter;
-import com.ufsj.projetovaca.fazenda.apresentationLayer.utils.Conversores;
+import com.ufsj.projetovaca.fazenda.apresentationLayer.assemblers.CochoAssembler;
 import com.ufsj.projetovaca.fazenda.domainLayer.models.Cocho;
 import com.ufsj.projetovaca.fazenda.domainLayer.models.Fazenda;
 import com.ufsj.projetovaca.fazenda.domainLayer.models.MateriaPrima;
@@ -22,22 +21,10 @@ import com.ufsj.projetovaca.fazenda.domainLayer.repositories.FazendaRepository;
 import com.ufsj.projetovaca.fazenda.domainLayer.repositories.MateriaPrimaRepository;
 @Service
 public class CadastroCocho {
-	Conversores<CochoInput, CochoOutput, Cocho> conversoresCocho = 
-			new Conversores<CochoInput, CochoOutput, Cocho>();
-	
-	Conversores<FazendaInput, FazendaOutput, Fazenda> conversoresFazenda = 
-			new Conversores<FazendaInput, FazendaOutput, Fazenda>();
 	
 	
-	AssemblerAdapter<Cocho, CochoInput> conversorEntidadeCocho = 
-			conversoresCocho.criarConversorEntidade(Cocho.class);
-	
-	AssemblerAdapter<CochoOutput, Cocho> conversorOutputCocho = 
-			conversoresCocho.criarConversorOutput(CochoOutput.class);
-	
-	AssemblerAdapter<FazendaOutput, Fazenda> conversorOutputFazenda = 
-			conversoresFazenda.criarConversorOutput(FazendaOutput.class);
-	
+	@Autowired
+	CochoAssembler cochoAssembler;
 	
 	@Autowired
 	FazendaRepository fazendaRepository;
@@ -48,10 +35,16 @@ public class CadastroCocho {
 	@Autowired
 	CochosDeUmaFazenda cochosDeUmaFazenda;
 	
-	
-	public CochoOutput salvar(long idFazenda,CochoInput cochoInput) throws NotFoundWithId,CochoNaMesmaLocalizacao {
+	@Transactional("fazendaTransactionManager")
+	public CochoOutput salvar(long idFazenda,CochoInput cochoInput) throws NotFoundWithId,CochoNaMesmaLocalizacao, NotFoundCochoType {
 		
-		Cocho cocho = conversorEntidadeCocho.converterUnitario(cochoInput);
+		Cocho cocho = cochoAssembler.converterEntidade(cochoInput);
+
+		if(!cocho.definirTipoCocho(cochoInput.getTipo())) {
+			
+			throw new NotFoundCochoType("Tipo de cocho inválido");
+			
+		}
 		
 		Optional<Fazenda> opFazenda  = fazendaRepository.findById(idFazenda);
 		
@@ -85,7 +78,7 @@ public class CadastroCocho {
 		
 		fazendaRepository.save(fazenda);
 		
-		CochoOutput cochoOutput = conversorOutputCocho.converterUnitario(fazenda.getCochos().get(fazenda.getCochos().size() - 1));
+		CochoOutput cochoOutput = cochoAssembler.converterOutput(fazenda.getCochos().get(fazenda.getCochos().size() - 1));
 		
 		cochoOutput.setIdFazenda(idFazenda);
 		
@@ -105,6 +98,7 @@ public class CadastroCocho {
 		return cochosOutput;
 		
 	}
+	@Transactional("fazendaTransactionManager")
 	public CochoOutput removerCocho(long idFazenda,long idCocho) throws NotFoundWithId {
 		
 		Optional<Fazenda> opFazenda = fazendaRepository.findById(idFazenda);
@@ -123,13 +117,13 @@ public class CadastroCocho {
 		
 		fazendaRepository.save(fazenda);
 		
-		CochoOutput cochoOutput = conversorOutputCocho.converterUnitario(cocho);
+		CochoOutput cochoOutput = cochoAssembler.converterOutput(cocho);
 		
 		return cochoOutput;
 		
 		
 	}
-	
+	@Transactional("fazendaTransactionManager")
 	public CochoOutput atualizarCocho(long idFazenda,long idCocho,Cocho attCocho) throws NotFoundWithId {
 		
 		Optional<Fazenda> opFazenda = fazendaRepository.findById(idFazenda);
@@ -154,7 +148,7 @@ public class CadastroCocho {
 		
 		fazendaRepository.save(fazenda);
 		
-		CochoOutput cochoOutput = conversorOutputCocho.converterUnitario(cocho);
+		CochoOutput cochoOutput = cochoAssembler.converterOutput(cocho);
 		
 		return cochoOutput;	
 		

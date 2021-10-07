@@ -9,15 +9,13 @@ import org.springframework.stereotype.Service;
 
 import com.ufsj.projetovaca.comercial.apresentationLayer.DTO.CompraLeiteInput;
 import com.ufsj.projetovaca.comercial.apresentationLayer.DTO.CompraLeiteOutput;
+import com.ufsj.projetovaca.comercial.apresentationLayer.assemblers.CompraLeiteAssembler;
 import com.ufsj.projetovaca.comercial.domainLayer.domainServices.PodeCadastrarCompraLeite;
 import com.ufsj.projetovaca.comercial.domainLayer.models.CompraLeite;
 import com.ufsj.projetovaca.comercial.domainLayer.models.Comprador;
 import com.ufsj.projetovaca.comercial.domainLayer.repositories.CompraLeiteRepository;
 import com.ufsj.projetovaca.comercial.domainLayer.repositories.CompradorRepository;
-import com.ufsj.projetovaca.comercial.infraLayer.assembler.AssemblerAdapter;
-import com.ufsj.projetovaca.comercial.infraLayer.assembler.Conversores;
 import com.ufsj.projetovaca.fazenda.applicationLayer.exceptions.NotFoundWithId;
-import com.ufsj.projetovaca.fazenda.apresentationLayer.utils.CopiarAtributos;
 
 
 
@@ -34,22 +32,14 @@ public class CadastroCompraLeite {
 	@Autowired
 	CompradorRepository compradorRepository;
 	
-	
-	
-	Conversores<CompraLeiteInput, CompraLeiteOutput, CompraLeite> conversores = 
-			new Conversores<CompraLeiteInput, CompraLeiteOutput, CompraLeite>();
-	
-	AssemblerAdapter<CompraLeite, CompraLeiteInput> conversorEntidade = 
-			conversores.criarConversorEntidade(CompraLeite.class);
-	
-	AssemblerAdapter<CompraLeiteOutput, CompraLeite> conversorOutput = 
-			conversores.criarConversorOutput(CompraLeiteOutput.class);
+	@Autowired
+	CompraLeiteAssembler compraLeiteAssembler;
 	
 	public List<CompraLeiteOutput> listar(){
 		
 		List<CompraLeite> comprasLeite = compraLeiteRepository.findAll();
 		
-		List<CompraLeiteOutput> comprasLeiteOutput = conversorOutput.converterColecao(comprasLeite);
+		List<CompraLeiteOutput> comprasLeiteOutput = compraLeiteAssembler.converterColecaoOutput(comprasLeite);
 		
 		return comprasLeiteOutput;
 		
@@ -57,7 +47,7 @@ public class CadastroCompraLeite {
 	
 	public CompraLeiteOutput criar(CompraLeiteInput compraLeiteInput) throws NotFoundWithId {
 		
-		CompraLeite compraLeite = conversorEntidade.converterUnitario(compraLeiteInput);
+		CompraLeite compraLeite = compraLeiteAssembler.converterEntidade(compraLeiteInput);
 		
 		if(!podeCadastrarCompraLeite.execute(compraLeiteInput.getIdComprador())) {
 			
@@ -69,7 +59,7 @@ public class CadastroCompraLeite {
 		
 		CompraLeite novaCompraLeite = compraLeiteRepository.save(compraLeite);
 		
-		CompraLeiteOutput compraLeiteOutput = conversorOutput.converterUnitario(novaCompraLeite);
+		CompraLeiteOutput compraLeiteOutput = compraLeiteAssembler.converterOutput(novaCompraLeite);
 		
 		return compraLeiteOutput;
 		
@@ -91,7 +81,7 @@ public class CadastroCompraLeite {
 		
 		CompraLeite novaCompraLeite = compraLeiteRepository.save(compraLeite);
 		
-		CompraLeiteOutput compraLeiteOutput = conversorOutput.converterUnitario(novaCompraLeite);
+		CompraLeiteOutput compraLeiteOutput = compraLeiteAssembler.converterOutput(novaCompraLeite);
 		
 		return compraLeiteOutput;
 		
@@ -99,7 +89,7 @@ public class CadastroCompraLeite {
 	
 	public CompraLeiteOutput atualizar(long idCompraLeite,CompraLeiteInput compraLeiteInput) throws NotFoundWithId {
 		
-		CompraLeite attCompraLeite = conversorEntidade.converterUnitario(compraLeiteInput);
+		CompraLeite attCompraLeite = compraLeiteAssembler.converterEntidade(compraLeiteInput);
 		
 		Optional<CompraLeite> opCompraLeite = compraLeiteRepository.findById(idCompraLeite);
 		
@@ -125,11 +115,11 @@ public class CadastroCompraLeite {
 			
 		}	
 		
-		BeanUtils.copyProperties(attCompraLeite, compraLeite,"id");
+		BeanUtils.copyProperties(attCompraLeite, compraLeite,"id","cancelado");
 		
 		CompraLeite novaCompraLeite = compraLeiteRepository.save(compraLeite);
 		
-		CompraLeiteOutput compraLeiteOutput = conversorOutput.converterUnitario(novaCompraLeite);
+		CompraLeiteOutput compraLeiteOutput = compraLeiteAssembler.converterOutput(novaCompraLeite);
 		
 		return compraLeiteOutput;	
 		

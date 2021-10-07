@@ -10,10 +10,9 @@ import org.springframework.stereotype.Service;
 import com.ufsj.projetovaca.comercial.applicationLayer.exceptions.InvalidTipoDeComprador;
 import com.ufsj.projetovaca.comercial.apresentationLayer.DTO.CompradorInput;
 import com.ufsj.projetovaca.comercial.apresentationLayer.DTO.CompradorOutput;
+import com.ufsj.projetovaca.comercial.apresentationLayer.assemblers.CompradorAssembler;
 import com.ufsj.projetovaca.comercial.domainLayer.models.Comprador;
 import com.ufsj.projetovaca.comercial.domainLayer.repositories.CompradorRepository;
-import com.ufsj.projetovaca.comercial.infraLayer.assembler.AssemblerAdapter;
-import com.ufsj.projetovaca.comercial.infraLayer.assembler.Conversores;
 import com.ufsj.projetovaca.fazenda.applicationLayer.exceptions.NotFoundWithId;
 
 
@@ -21,14 +20,8 @@ import com.ufsj.projetovaca.fazenda.applicationLayer.exceptions.NotFoundWithId;
 public class CadastroComprador {
 	
 	
-	Conversores<CompradorInput, CompradorOutput, Comprador> conversores = 
-			new Conversores<CompradorInput, CompradorOutput, Comprador>();
-	
-	AssemblerAdapter<Comprador, CompradorInput> conversorEntidade = 
-			conversores.criarConversorEntidade(Comprador.class);
-	
-	AssemblerAdapter<CompradorOutput, Comprador> conversorOutput = 
-			conversores.criarConversorOutput(CompradorOutput.class);
+	@Autowired
+	CompradorAssembler compradorAssembler;
 	
 	@Autowired
 	CompradorRepository compradorRepository;
@@ -38,13 +31,13 @@ public class CadastroComprador {
 		
 		List<Comprador> compradores = compradorRepository.findAll();
 		
-		return conversorOutput.converterColecao(compradores);
+		return compradorAssembler.converterColecaoOutput(compradores);
 		
 	}
 	
 	public CompradorOutput criar(CompradorInput compradorInput) throws InvalidTipoDeComprador {
 		
-		Comprador comprador = conversorEntidade.converterUnitario(compradorInput);
+		Comprador comprador = compradorAssembler.converterEntidade(compradorInput);
 		
 		comprador.setAtivo(true);
 		
@@ -58,7 +51,7 @@ public class CadastroComprador {
 		
 		Comprador novoComprador = compradorRepository.save(comprador);
 		
-		CompradorOutput compradorOutput = conversorOutput.converterUnitario(novoComprador);
+		CompradorOutput compradorOutput = compradorAssembler.converterOutput(novoComprador);
 		
 		compradorOutput.setTipoComprador(novoComprador.getTipoComprador().toString());
 		
@@ -82,7 +75,7 @@ public class CadastroComprador {
 		
 		Comprador novoComprador = compradorRepository.save(comprador);
 		
-		CompradorOutput compradorOutput = conversorOutput.converterUnitario(novoComprador);
+		CompradorOutput compradorOutput = compradorAssembler.converterOutput(novoComprador);
 		
 		return compradorOutput;
 		
@@ -101,7 +94,7 @@ public class CadastroComprador {
 		
 		Comprador comprador = opComprador.get();
 		
-		Comprador novoComprador = conversorEntidade.converterUnitario(compradorInput);
+		Comprador novoComprador = compradorAssembler.converterEntidade(compradorInput);
 		
 		boolean isTipoCompradorValido = comprador.definirComprador(compradorInput.getTipoComprador());
 		
@@ -113,7 +106,7 @@ public class CadastroComprador {
 		
 		BeanUtils.copyProperties(novoComprador, comprador,"id","ativo","tipoComprador");
 		
-		return conversorOutput.converterUnitario(compradorRepository.save(comprador));		
+		return compradorAssembler.converterOutput(compradorRepository.save(comprador));		
 		
 	}
 	

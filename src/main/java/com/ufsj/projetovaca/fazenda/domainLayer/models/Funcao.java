@@ -21,4 +21,10 @@ public class Funcao {
 	private float salario;
 	@Column
 	private boolean isAtivado;
+	
+	public void ativarFuncao() {
+		
+		setAtivado(true);
+		
+	}
 }

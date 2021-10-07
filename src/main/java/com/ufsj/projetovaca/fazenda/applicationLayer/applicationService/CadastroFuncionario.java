@@ -1,16 +1,16 @@
 package com.ufsj.projetovaca.fazenda.applicationLayer.applicationService;
 
+import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ufsj.projetovaca.fazenda.applicationLayer.exceptions.NotFoundWithId;
 import com.ufsj.projetovaca.fazenda.apresentationLayer.DTO.FuncionarioInput;
 import com.ufsj.projetovaca.fazenda.apresentationLayer.DTO.FuncionarioOutput;
-import com.ufsj.projetovaca.fazenda.apresentationLayer.utils.AssemblerAdapter;
-import com.ufsj.projetovaca.fazenda.apresentationLayer.utils.Conversores;
-import com.ufsj.projetovaca.fazenda.apresentationLayer.utils.CopiarAtributos;
+import com.ufsj.projetovaca.fazenda.apresentationLayer.assemblers.FuncionarioAssembler;
 import com.ufsj.projetovaca.fazenda.domainLayer.domainServices.VerificaSePossuiFuncaoFuncionario;
 import com.ufsj.projetovaca.fazenda.domainLayer.models.Funcionario;
 import com.ufsj.projetovaca.fazenda.domainLayer.repositories.FuncionarioRepository;
@@ -25,15 +25,8 @@ public class CadastroFuncionario {
 	@Autowired
 	FuncionarioRepository funcionarioRepository;
 	
-	
-	Conversores<FuncionarioInput, FuncionarioOutput, Funcionario> conversores = 
-			new Conversores<FuncionarioInput, FuncionarioOutput, Funcionario>(); 
-	
-	AssemblerAdapter<Funcionario, FuncionarioInput> conversorEntidade = 
-			conversores.criarConversorEntidade(Funcionario.class);
-	
-	AssemblerAdapter<FuncionarioOutput, Funcionario> conversorOutput = 
-			conversores.criarConversorOutput(FuncionarioOutput.class);
+	@Autowired
+	FuncionarioAssembler funcionarioAssembler;
 	
 	public FuncionarioOutput salvar(FuncionarioInput funcionarioInput) throws NotFoundWithId {
 		long idFuncao = funcionarioInput.getFuncaoFuncionario().getIdFuncao();
@@ -43,14 +36,14 @@ public class CadastroFuncionario {
 			throw new NotFoundWithId("Não existe função com esse id");
 		}
 		
-		Funcionario funcionario = conversorEntidade.converterUnitario(funcionarioInput);
+		Funcionario funcionario = funcionarioAssembler.converterEntidade(funcionarioInput);
 		
 		funcionario.setIsDemitido(false);
 		
 		
 		funcionario = funcionarioRepository.save(funcionario);
 		
-		FuncionarioOutput funcionarioOutput = conversorOutput.converterUnitario(funcionario);
+		FuncionarioOutput funcionarioOutput = funcionarioAssembler.converterOutput(funcionario);
 		
 		return funcionarioOutput;
 	}
@@ -66,11 +59,14 @@ public class CadastroFuncionario {
 		
 		Funcionario funcionario = opFuncionario.get();	
 		
+		System.out.println(funcionario);
+		
 		funcionario.setIsDemitido(!funcionario.getIsDemitido());
 		
+		Funcionario novoFuncionario = funcionarioRepository.save(funcionario);
+		
 		FuncionarioOutput funcionarioOutput = 
-				conversorOutput
-				.converterUnitario(funcionarioRepository.save(funcionario));
+				funcionarioAssembler.converterOutput(novoFuncionario);
 		
 		return funcionarioOutput;
 	}
@@ -92,16 +88,23 @@ public class CadastroFuncionario {
 		
 		Funcionario funcionario = opFuncionario.get();
 		
-		Funcionario novoFuncionario = conversorEntidade.converterUnitario(funcionarioInput);
+		Funcionario novoFuncionario = funcionarioAssembler.converterEntidade(funcionarioInput);
 		
-		CopiarAtributos.copiarAtributos(funcionario,novoFuncionario , "idFuncionario");
-		
-		funcionario.setId(id);
+		BeanUtils.copyProperties(novoFuncionario, funcionario,"id","isDemitido");
 					
 		FuncionarioOutput funcionarioOutput = 
-				conversorOutput.converterUnitario(funcionarioRepository.save(funcionario));
+				funcionarioAssembler.converterOutput(funcionarioRepository.save(funcionario));
 		
 		return funcionarioOutput;
+		
+	}
+	public List<FuncionarioOutput> listar(){
+		
+		List<Funcionario> funcionarios = funcionarioRepository.findAll();
+		
+		List<FuncionarioOutput> funcionariosOutput = funcionarioAssembler.converterColecaoOutput(funcionarios);
+		
+		return funcionariosOutput;
 		
 	}
 }

@@ -1,8 +1,5 @@
 package com.ufsj.projetovaca.fazenda.apresentationLayer.DTO;
 
-
-
-
 import lombok.Data;
 
 @Data
@@ -13,4 +10,5 @@ public class CochoInput {
 	private boolean isCoberto;
 	private long idMateriaPrima;
 	private Localizacao localizacao;
+	private String tipo; 
 }

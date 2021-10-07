@@ -77,7 +77,7 @@ public class CompradorController extends ACrudController<CompradorInput, Comprad
 			
 		}catch(NotFoundWithId e){
 			
-			return erroUsuarioNaoEncontrado();
+			return erroUsuarioNaoEncontrado(e.getMessage());
 			
 		}catch(Exception e) {
 			
@@ -99,11 +99,11 @@ public class CompradorController extends ACrudController<CompradorInput, Comprad
 			
 		}catch(NotFoundWithId e) {
 			
-			return erroUsuarioNaoEncontrado();
+			return erroUsuarioNaoEncontrado(e.getMessage());
 			
 		}catch(InvalidTipoDeComprador e) {
 			
-			return erroUsuarioNaoEncontrado();
+			return erroUsuarioNaoEncontrado(e.getMessage());
 			
 		}catch(Exception e) {
 			

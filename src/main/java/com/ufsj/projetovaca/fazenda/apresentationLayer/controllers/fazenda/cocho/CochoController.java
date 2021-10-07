@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ufsj.projetovaca.fazenda.applicationLayer.applicationService.CadastroCocho;
 import com.ufsj.projetovaca.fazenda.applicationLayer.applicationService.CochosDeUmaFazenda;
 import com.ufsj.projetovaca.fazenda.applicationLayer.exceptions.CochoNaMesmaLocalizacao;
+import com.ufsj.projetovaca.fazenda.applicationLayer.exceptions.NotFoundCochoType;
 import com.ufsj.projetovaca.fazenda.applicationLayer.exceptions.NotFoundWithId;
 import com.ufsj.projetovaca.fazenda.apresentationLayer.DTO.CochoInput;
 import com.ufsj.projetovaca.fazenda.apresentationLayer.DTO.CochoOutput;
@@ -70,15 +71,28 @@ public class CochoController extends ICrudController<CochoInput, CochoOutput, Co
 	public ResponseEntity<?> criar(@RequestBody CochoInput cochoInput,@PathVariable long idFazenda) {
 		
 		try {			
+			
 			CochoOutput cochoOutput = cadastroCocho.salvar(idFazenda, cochoInput);
+			
 			return RespostaStatus(HttpStatus.OK, cochoOutput);
+			
 		}catch(NotFoundWithId e) {
-			System.out.println(e);
+			
 			return erroUsuarioNaoEncontrado();
+			
 		}catch(CochoNaMesmaLocalizacao e) {
+			
 			//Criar um erro específico
-			System.out.println(e);
 			return erroUsuarioNaoEncontrado();
+			
+		}catch(NotFoundCochoType e) {
+			
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+			
+		}catch(Exception e) {
+			
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+			
 		}
 	}
 	

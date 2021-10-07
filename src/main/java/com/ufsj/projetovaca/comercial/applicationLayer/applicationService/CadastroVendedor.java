@@ -10,23 +10,15 @@ import org.springframework.stereotype.Service;
 import com.ufsj.projetovaca.comercial.applicationLayer.exceptions.NotFoundWithId;
 import com.ufsj.projetovaca.comercial.apresentationLayer.DTO.VendedorInput;
 import com.ufsj.projetovaca.comercial.apresentationLayer.DTO.VendedorOutput;
+import com.ufsj.projetovaca.comercial.apresentationLayer.assemblers.VendedorAssembler;
 import com.ufsj.projetovaca.comercial.domainLayer.models.Vendedor;
 import com.ufsj.projetovaca.comercial.domainLayer.repositories.VendedorRepository;
-import com.ufsj.projetovaca.comercial.infraLayer.assembler.AssemblerAdapter;
-import com.ufsj.projetovaca.comercial.infraLayer.assembler.Conversores;
+
 @Service
 public class CadastroVendedor {
 	
-	Conversores<VendedorInput,VendedorOutput,Vendedor> conversores = 
-			new Conversores<VendedorInput,VendedorOutput,Vendedor>(); 
-	
-	
-	AssemblerAdapter<Vendedor, VendedorInput> conversorEntidade = 
-			conversores.criarConversorEntidade(Vendedor.class);
-	
-	AssemblerAdapter<VendedorOutput, Vendedor> conversorOutput = 
-			conversores.criarConversorOutput(VendedorOutput.class);
-	
+	@Autowired
+	VendedorAssembler vendedorAssembler;
 	
 	@Autowired
 	VendedorRepository vendedorRepository;
@@ -35,13 +27,13 @@ public class CadastroVendedor {
 	
 	public VendedorOutput salvar(VendedorInput vendedorInput) {
 		
-		Vendedor vendedor = conversorEntidade.converterUnitario(vendedorInput);
+		Vendedor vendedor = vendedorAssembler.converterEntidade(vendedorInput);
 		
 		vendedor.setAtivo(true);
 		
 		Vendedor novoVendedor = vendedorRepository.save(vendedor);
 		
-		VendedorOutput vendedorOutput = conversorOutput.converterUnitario(novoVendedor);
+		VendedorOutput vendedorOutput = vendedorAssembler.converterOutput(novoVendedor);
 		
 		return vendedorOutput;
 		
@@ -51,7 +43,7 @@ public class CadastroVendedor {
 		
 		List<Vendedor> vendedores = vendedorRepository.findAll();
 		
-		List<VendedorOutput> vendedoresOutput = conversorOutput.converterColecao(vendedores);
+		List<VendedorOutput> vendedoresOutput = vendedorAssembler.converterColecaoOutput(vendedores);
 		
 		return vendedoresOutput;
 		
@@ -73,7 +65,7 @@ public class CadastroVendedor {
 		
 		Vendedor novoVendedor = vendedorRepository.save(vendedor);
 		
-		VendedorOutput vendedorOutput = conversorOutput.converterUnitario(novoVendedor);
+		VendedorOutput vendedorOutput = vendedorAssembler.converterOutput(novoVendedor);
 		
 		return vendedorOutput;
 			
@@ -92,12 +84,12 @@ public class CadastroVendedor {
 		
 		
 		
-		Vendedor novoVendedor = conversorEntidade.converterUnitario(vendedorInput);
+		Vendedor novoVendedor = vendedorAssembler.converterEntidade(vendedorInput);
 		
 		BeanUtils.copyProperties(novoVendedor, vendedor,"id","ativo");
 		
 		VendedorOutput vendedorOutput = 
-				conversorOutput.converterUnitario(vendedorRepository.save(vendedor));
+				vendedorAssembler.converterOutput(vendedorRepository.save(vendedor));
 		
 		return vendedorOutput;
 		

@@ -50,13 +50,21 @@ public class FuncionarioController extends ICrudController<FuncionarioInput,Func
 	
 	@GetMapping
 	@Override
-	public ResponseEntity<List<FuncionarioOutput>> listar() {
+	public ResponseEntity<?> listar() {
 		
-		List<Funcionario> funcionarios = funcionarioRepository.findAll();
+		try {
+			
+			List<FuncionarioOutput> funcionariosOutput = cadastroFuncionario.listar();
+			
+			return RespostaStatus(HttpStatus.OK, funcionariosOutput);
+			
+		}catch(Exception e) {
+			
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+			
+		}
 		
-		List<FuncionarioOutput> funcionariosOutput = conversorOutput.converterColecao(funcionarios);
 		
-		return RespostaStatus(HttpStatus.OK, funcionariosOutput);
 		
 	}
 	
@@ -99,6 +107,8 @@ public class FuncionarioController extends ICrudController<FuncionarioInput,Func
 		try {
 			
 			FuncionarioOutput funcionarioOutput = cadastroFuncionario.atualizar(funcionarioInput, id);
+			
+			
 			
 			return RespostaStatus(HttpStatus.OK, funcionarioOutput);
 			

@@ -33,30 +33,16 @@ public class FuncaoController extends ICrudController<FuncaoInput,FuncaoOutput,F
 		super();
 		super.criarConversores(FuncaoOutput.class);
 	}
-
-	@Autowired
-	private FuncaoRepository funcaoRepository;
 	
 	@Autowired
 	private CadastroFuncao cadastroFuncao;
 	
 	
-	
-	Conversores<FuncaoInput, FuncaoOutput, Funcao> conversores = 
-			new Conversores<FuncaoInput, FuncaoOutput, Funcao>();
-	
-	AssemblerAdapter<FuncaoOutput, Funcao> conversorOutput = 
-			conversores.criarConversorOutput(FuncaoOutput.class);
-	
-	AssemblerAdapter<Funcao, FuncaoInput> conversorEntidade = conversores.criarConversorEntidade(Funcao.class);
-	
 	@GetMapping
 	public ResponseEntity<List<FuncaoOutput>> listar(){
 		try {
-			
-			List<Funcao> funcoes = funcaoRepository.findAll();
 					
-			List<FuncaoOutput> funcoesOutput = conversorOutput.converterColecao(funcoes);
+			List<FuncaoOutput> funcoesOutput = cadastroFuncao.listar();
 			
 			
 			return ResponseEntity.status(HttpStatus.OK).body(funcoesOutput);

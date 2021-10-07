@@ -10,4 +10,5 @@ public class CochoOutput {
 	private boolean isCoberto;
 	private long idFazenda;
 	private long idMateriaPrima;
+	private String tipo;
 }

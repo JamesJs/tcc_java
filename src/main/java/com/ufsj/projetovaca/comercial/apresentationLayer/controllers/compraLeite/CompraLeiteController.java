@@ -81,7 +81,7 @@ public class CompraLeiteController extends ACrudController<CompraLeiteInput, Com
 			
 		}catch(NotFoundWithId e) {
 			
-			return erroUsuarioNaoEncontrado();
+			return erroUsuarioNaoEncontrado(e.getMessage());
 			
 		}catch(Exception e) {
 			
@@ -102,7 +102,7 @@ public class CompraLeiteController extends ACrudController<CompraLeiteInput, Com
 			
 		}catch(NotFoundWithId e) {
 			
-			return erroUsuarioNaoEncontrado();
+			return erroUsuarioNaoEncontrado(e.getMessage());
 			
 		}catch(Exception e) {
 			
