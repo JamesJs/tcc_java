@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.ufsj.projetovaca.animal.apresentationLayer.DTO.AnimalInputAtualizacao;
 import com.ufsj.projetovaca.comercial.infraLayer.assembler.AssemblerAdapter;
 import com.ufsj.projetovaca.comercial.infraLayer.assembler.Conversores;
 
@@ -98,6 +99,7 @@ public abstract class ACrudController<Input,Output,Entidade> {
 	public abstract ResponseEntity<?> listar();
 	public abstract ResponseEntity<?> criar(Input Input);
 	public abstract ResponseEntity<?> deletar(Long id);
-	public abstract ResponseEntity<?> atualizar(Input Input,Long id);
+	//public abstract <K>ResponseEntity<?> atualizar(K Input,Long id);
+
 	
 }

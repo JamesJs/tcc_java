@@ -14,7 +14,7 @@ import com.ufsj.projetovaca.comercial.domainLayer.models.VendaGado;
 import com.ufsj.projetovaca.comercial.domainLayer.models.embedded.Animal;
 import com.ufsj.projetovaca.comercial.domainLayer.repositories.VendaGadoRepository;
 
-@RestController
+//@RestController
 public class VendaGadoController {
 	
 	@Autowired
@@ -23,7 +23,6 @@ public class VendaGadoController {
 	@Autowired
 	CadastroVendaGado cadastroVendaGado;
 	
-	@GetMapping("vendaGado")
 	public void teste(){
 		
 		Animal animal = new Animal();

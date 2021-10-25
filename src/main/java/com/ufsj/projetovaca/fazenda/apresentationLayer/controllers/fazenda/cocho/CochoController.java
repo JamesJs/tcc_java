@@ -1,6 +1,7 @@
 package com.ufsj.projetovaca.fazenda.apresentationLayer.controllers.fazenda.cocho;
 
 
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -25,8 +26,13 @@ import com.ufsj.projetovaca.fazenda.apresentationLayer.DTO.CochoOutput;
 import com.ufsj.projetovaca.fazenda.apresentationLayer.controllers.interfaces.ICrudController;
 import com.ufsj.projetovaca.fazenda.domainLayer.models.Cocho;
 import com.ufsj.projetovaca.fazenda.domainLayer.repositories.FazendaRepository;
-@RestController
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+@RestController()
+@Api(tags = {"Cocho"},description = "Endpoints relacionados aos cochos")
 public class CochoController extends ICrudController<CochoInput, CochoOutput, Cocho> {
 
 	
@@ -51,7 +57,14 @@ public class CochoController extends ICrudController<CochoInput, CochoOutput, Co
 	CadastroCocho cadastroCocho;
 
 	
-	@GetMapping("fazenda/{idFazenda}/cocho")
+	@GetMapping(path ="fazenda/{idFazenda}/cocho",produces = "application/json")
+	@ApiOperation(value = "Lista todos os cochos de cada fazenda.")
+	@ApiResponses(value = {
+	        @ApiResponse(code=200, message = "Retorna os cochos cadastrados relacionados à uma fazenda. É um array.", response = CochoOutput.class),
+	        @ApiResponse(code=500, message = "Retorna uma mensagem de erro do servidor"),
+	        @ApiResponse(code=404, message = "Retorna uma mensagem de não encontrado")
+	        
+	 })
 	public ResponseEntity<?> listarPorFazenda(@PathVariable long idFazenda) {
 		try {
 			
@@ -59,22 +72,40 @@ public class CochoController extends ICrudController<CochoInput, CochoOutput, Co
 			
 			return RespostaStatus(HttpStatus.OK, cochoOutput);
 		
-		}catch(Exception e) {
+		}catch(NotFoundWithId e){
+			
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new HashMap<String, Object>(){/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+			{
+				put("err",e.getMessage());
+			}});
+		}
+		
+		catch(Exception e) {
 			
 			return erroServidor(e);
 		
 		}
 	}
 
-	
-	@PostMapping("fazenda/{idFazenda}/cocho")
+	@ApiOperation(value = "Cadastra um novo cocho no sistema.")
+	@ApiResponses(value = {
+	        @ApiResponse(code=201, message = "Retorna o cocho criado", response = CochoOutput.class),
+	        @ApiResponse(code=500, message = "Retorna uma mensagem de erro do servidor"),
+	        @ApiResponse(code=404, message = "Retorna uma mensagem de não encontrado")
+	        
+	 })
+	@PostMapping(path = "fazenda/{idFazenda}/cocho",produces = "application/json")
 	public ResponseEntity<?> criar(@RequestBody CochoInput cochoInput,@PathVariable long idFazenda) {
 		
 		try {			
 			
 			CochoOutput cochoOutput = cadastroCocho.salvar(idFazenda, cochoInput);
 			
-			return RespostaStatus(HttpStatus.OK, cochoOutput);
+			return RespostaStatus(HttpStatus.CREATED, cochoOutput);
 			
 		}catch(NotFoundWithId e) {
 			
@@ -97,7 +128,14 @@ public class CochoController extends ICrudController<CochoInput, CochoOutput, Co
 	}
 	
 	
-	@DeleteMapping("fazenda/{idFazenda}/cocho/{idCocho}")
+	@DeleteMapping(path = "fazenda/{idFazenda}/cocho/{idCocho}",produces = "application/json")
+	@ApiResponses(value = {
+	        @ApiResponse(code=200, message = "Retorna o cocho deletado", response = CochoOutput.class),
+	        @ApiResponse(code=404, message = "Retorna uma mensagem de não encontrado"),
+	        @ApiResponse(code=500, message = "Retorna uma mensagem de erro do servidor")
+	        
+	 })
+	@ApiOperation(value = "Deleta animal do sistema.")
 	public ResponseEntity<?> removerCochoDeUmaFazenda(@PathVariable Long idFazenda, @PathVariable long idCocho){
 		try {
 			CochoOutput cochoOutput = cadastroCocho.removerCocho(idFazenda, idCocho);
@@ -110,7 +148,14 @@ public class CochoController extends ICrudController<CochoInput, CochoOutput, Co
 		
 	}
 	
-	@PutMapping("fazenda/{idFazenda}/cocho/{idCocho}")
+	@PutMapping(path = "fazenda/{idFazenda}/cocho/{idCocho}",produces = "application/json")
+	@ApiResponses(value = {
+	        @ApiResponse(code=200, message = "Retorna o cocho atualizado.", response = CochoOutput.class),
+	        @ApiResponse(code=404, message = "Retorna uma mensagem de não encontrado"),
+	        @ApiResponse(code=500, message = "Retorna uma mensagem de erro do servidor")
+	        
+	 })
+	@ApiOperation(value = "Realiza atualização a todos os parâmetros de um cocho.")
 	public ResponseEntity<?> atualizarCochoDeUmaFazenda(@PathVariable long idFazenda,@PathVariable long idCocho ,@RequestBody Cocho Cocho){
 		try {
 			CochoOutput cochoOutput = cadastroCocho.atualizarCocho(idFazenda,idCocho ,Cocho);

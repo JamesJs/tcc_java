@@ -92,7 +92,7 @@ public class CadastroCocho {
 		
 		if(cochosOutput == null) {
 		
-			throw new NotFoundWithId("Não foi encontrada fazenda com esse id");
+			throw new NotFoundWithId("Não foi encontrada fazenda com o id informado");
 		}
 		
 		return cochosOutput;

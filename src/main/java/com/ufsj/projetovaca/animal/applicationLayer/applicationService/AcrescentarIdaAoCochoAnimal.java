@@ -11,9 +11,9 @@ import com.ufsj.projetovaca.animal.apresentationLayer.assemblers.AnimalAssembler
 import com.ufsj.projetovaca.animal.domainLayer.domainServices.ValidaTipoCocho;
 import com.ufsj.projetovaca.animal.domainLayer.models.Animal;
 import com.ufsj.projetovaca.animal.domainLayer.repositories.AnimalRepository;
-import com.ufsj.projetovaca.fazenda.applicationLayer.exceptions.NotFoundWithId;
+import com.ufsj.projetovaca.animal.applicationLayer.exceptions.NotFoundWithId;
 @Service
-public class AcresentarIdaAoCochoAnimal {
+public class AcrescentarIdaAoCochoAnimal {
 
 	@Autowired
 	AnimalRepository animalRepository;

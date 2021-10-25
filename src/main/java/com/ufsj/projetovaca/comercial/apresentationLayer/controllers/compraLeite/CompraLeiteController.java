@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ufsj.projetovaca.animal.apresentationLayer.DTO.AnimalOutput;
 import com.ufsj.projetovaca.comercial.applicationLayer.applicationService.CadastroCompraLeite;
 import com.ufsj.projetovaca.comercial.apresentationLayer.DTO.CompraLeiteInput;
 import com.ufsj.projetovaca.comercial.apresentationLayer.DTO.CompraLeiteOutput;
@@ -21,9 +22,15 @@ import com.ufsj.projetovaca.comercial.apresentationLayer.controllers.ACrudContro
 import com.ufsj.projetovaca.comercial.domainLayer.models.CompraLeite;
 import com.ufsj.projetovaca.fazenda.applicationLayer.exceptions.NotFoundWithId;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
-@RequestMapping("/compraLeite")
+
+@RequestMapping(path ="/compraLeite",produces = "application/json")
 @RestController
+@Api(tags = {"Compra de Leite"},description = "Endpoints relacionados à realização de compras de leite. As compras são realizadas por compradores cadastrados no sistema.")
 public class CompraLeiteController extends ACrudController<CompraLeiteInput, CompraLeiteOutput, CompraLeite> {
 
 	
@@ -32,6 +39,12 @@ public class CompraLeiteController extends ACrudController<CompraLeiteInput, Com
 	
 	@GetMapping
 	@Override
+	@ApiOperation(value = "Lista todos as compras realizadas.")
+	@ApiResponses(value = {
+	        @ApiResponse(code=200, message = "Retorna as compras cadastradas. É um array.", response = CompraLeiteOutput.class),
+	        @ApiResponse(code=500, message = "Retorna uma mensagem de erro do servidor")
+	        
+	 })
 	public ResponseEntity<?> listar() {
 		
 		
@@ -51,6 +64,12 @@ public class CompraLeiteController extends ACrudController<CompraLeiteInput, Com
 	
 	@PostMapping
 	@Override
+	@ApiOperation(value = "Cadastra uma nova compra.")
+	@ApiResponses(value = {
+	        @ApiResponse(code=200, message = "Retorna a compra criada", response = CompraLeiteOutput.class),
+	        @ApiResponse(code=500, message = "Retorna uma mensagem de erro do servidor")
+	        
+	 })
 	public ResponseEntity<?> criar(@RequestBody CompraLeiteInput compraLeiteInput) {
 		
 		try {
@@ -71,6 +90,13 @@ public class CompraLeiteController extends ACrudController<CompraLeiteInput, Com
 	}
 	@DeleteMapping("/{id}")
 	@Override
+	@ApiResponses(value = {
+	        @ApiResponse(code=200, message = "Retorna a compra cancelada", response = CompraLeiteOutput.class),
+	        @ApiResponse(code=404, message = "Retorna uma mensagem de não encontrado"),
+	        @ApiResponse(code=500, message = "Retorna uma mensagem de erro do servidor")
+	        
+	 })
+	@ApiOperation(value = "Cancela uma compra.")
 	public ResponseEntity<?> deletar(@PathVariable Long id) {
 		
 		try {
@@ -93,6 +119,13 @@ public class CompraLeiteController extends ACrudController<CompraLeiteInput, Com
 	}
 	@PutMapping("/{id}")
 	@Override
+	@ApiResponses(value = {
+	        @ApiResponse(code=200, message = "Retorna uma compra atualizada.", response = CompraLeiteOutput.class),
+	        @ApiResponse(code=404, message = "Retorna uma mensagem de não encontrado"),
+	        @ApiResponse(code=500, message = "Retorna uma mensagem de erro do servidor")
+	        
+	 })
+	@ApiOperation(value = "Realiza atualização a todos os parâmetros de uma compra.",tags = {"Animal"})
 	public ResponseEntity<?> atualizar(@RequestBody CompraLeiteInput compraLeiteInput,@PathVariable Long id) {
 		try {
 			

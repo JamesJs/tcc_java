@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ufsj.projetovaca.animal.apresentationLayer.DTO.AnimalOutput;
 import com.ufsj.projetovaca.fazenda.applicationLayer.applicationService.CadastroMateriaPrima;
 import com.ufsj.projetovaca.fazenda.applicationLayer.applicationService.ExisteTipoDeMateriaPrima;
 import com.ufsj.projetovaca.fazenda.apresentationLayer.DTO.MateriaPrimaInput;
@@ -20,19 +21,23 @@ import com.ufsj.projetovaca.fazenda.apresentationLayer.controllers.interfaces.IC
 import com.ufsj.projetovaca.fazenda.domainLayer.models.MateriaPrima;
 import com.ufsj.projetovaca.fazenda.domainLayer.repositories.MateriaPrimaRepository;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 
 
 @RestController
-@RequestMapping("materiaPrima")
+@RequestMapping(path = "materiaPrima",produces = "application/json")
+@Api(tags = {"Materia Prima"},description = "Endpoints relacionados às matérias primas")
 public class MateriaPrimaController extends ICrudController<MateriaPrimaInput, MateriaPrimaOutput,MateriaPrima> {
 	
 	
 	Class<MateriaPrimaOutput> Output = MateriaPrimaOutput.class;
 		
 	public MateriaPrimaController() {
-		
 		super();
-		
 		super.criarConversores(Output);
 	}
 	
@@ -49,6 +54,12 @@ public class MateriaPrimaController extends ICrudController<MateriaPrimaInput, M
 	
 	@GetMapping
 	@Override
+	@ApiOperation(value = "Lista todas as matérias primas cadastradas no sistema.")
+	@ApiResponses(value = {
+	        @ApiResponse(code=200, message = "Retorna as matérias primas cadastradas. É um array.", response = MateriaPrimaOutput.class),
+	        @ApiResponse(code=500, message = "Retorna uma mensagem de erro do servidor")
+	        
+	 })
 	public ResponseEntity<?> listar() {
 		try {
 			
@@ -63,6 +74,12 @@ public class MateriaPrimaController extends ICrudController<MateriaPrimaInput, M
 
 	@PostMapping
 	@Override
+	@ApiOperation(value = "Cadastra uma nova matéria prima no sistema.")
+	@ApiResponses(value = {
+	        @ApiResponse(code=200, message = "Retorna a matéria prima criada", response = MateriaPrimaOutput.class),
+	        @ApiResponse(code=500, message = "Retorna uma mensagem de erro do servidor")
+	        
+	 })
 	public ResponseEntity<?> criar(@RequestBody MateriaPrimaInput materiaPrimaInput) {
 		
 		try {
@@ -79,7 +96,13 @@ public class MateriaPrimaController extends ICrudController<MateriaPrimaInput, M
 		
 	}
 	
-	
+	@ApiResponses(value = {
+	        @ApiResponse(code=200, message = "Retorna a matéria prima não mais utilizada", response = MateriaPrimaOutput.class),
+	        @ApiResponse(code=404, message = "Retorna uma mensagem de não encontrado"),
+	        @ApiResponse(code=500, message = "Retorna uma mensagem de erro do servidor")
+	        
+	 })
+	@ApiOperation(value = "Declara que uma matéria prima não será mais utilizada para criação de cochos.")
 	@DeleteMapping("/{id}")
 	@Override
 	public ResponseEntity<?> deletar(@PathVariable Long id) {
@@ -100,7 +123,13 @@ public class MateriaPrimaController extends ICrudController<MateriaPrimaInput, M
 	
 	}
 	
-	
+	@ApiResponses(value = {
+	        @ApiResponse(code=200, message = "Retorna a matéria prima atualizada.", response = MateriaPrimaOutput.class),
+	        @ApiResponse(code=404, message = "Retorna uma mensagem de não encontrado"),
+	        @ApiResponse(code=500, message = "Retorna uma mensagem de erro do servidor")
+	        
+	 })
+	@ApiOperation(value = "Realiza atualização a todos os parâmetros de uma matéria prima.")
 	@PutMapping("/{id}")
 	@Override
 	public ResponseEntity<?> atualizar(@RequestBody MateriaPrimaInput materiaPrimaInput,@PathVariable Long id) {

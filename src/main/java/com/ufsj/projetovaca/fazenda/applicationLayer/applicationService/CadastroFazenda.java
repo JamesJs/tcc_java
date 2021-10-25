@@ -2,9 +2,12 @@ package com.ufsj.projetovaca.fazenda.applicationLayer.applicationService;
 
 import java.util.Optional;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.ufsj.projetovaca.fazenda.applicationLayer.exceptions.FoundCochoInFazenda;
 import com.ufsj.projetovaca.fazenda.applicationLayer.exceptions.NotFoundWithId;
 import com.ufsj.projetovaca.fazenda.apresentationLayer.DTO.FazendaInput;
 import com.ufsj.projetovaca.fazenda.apresentationLayer.DTO.FazendaOutput;
@@ -35,7 +38,7 @@ public class CadastroFazenda {
 		return fazendaOutput;
 		
 	}
-	public FazendaOutput deletar(Long id) throws NotFoundWithId {
+	public FazendaOutput vender(Long id) throws NotFoundWithId {
 		
 		Optional<Fazenda> opFazenda = fazendaRepository.findById(id);
 		
@@ -52,5 +55,23 @@ public class CadastroFazenda {
 		FazendaOutput fazendaOutput = fazendaAssembler.converterOutput(fazendaRepository.save(fazenda));
 		
 		return fazendaOutput;
+	}
+	@Transactional("fazendaTransactionManager")
+	public FazendaOutput deletar(Long id,String queryParam) throws NotFoundWithId, FoundCochoInFazenda {
+		Optional<Fazenda> opFazenda = fazendaRepository.findById(id);
+		
+		if(opFazenda.isEmpty()) {
+			
+			throw new NotFoundWithId("Fazenda não encontrada");
+			
+		}
+		Fazenda fazenda = opFazenda.get();
+		if(!fazenda.podeRemover()&& !queryParam.equals("yes")) {
+			throw new FoundCochoInFazenda("Foi encontrado um cocho pertencente à essa fazenda. Para deletar a fazenda e todos os seus cochos envie um query param force=yes");
+		}
+		fazendaRepository.delete(fazenda);
+		FazendaOutput fazendaOutput = fazendaAssembler.converterOutput(fazenda);
+		return fazendaOutput;
+		
 	}
 }

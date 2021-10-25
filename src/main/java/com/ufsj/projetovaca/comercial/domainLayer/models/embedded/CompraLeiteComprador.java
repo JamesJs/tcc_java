@@ -8,5 +8,5 @@ import lombok.Data;
 @Data
 public class CompraLeiteComprador {
 	@Column
-	private int idComprador;
+	private long idComprador;
 }

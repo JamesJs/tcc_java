@@ -3,11 +3,10 @@ package com.ufsj.projetovaca.animal.apresentationLayer.DTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-@ApiModel(value = "Saída de animal",description = "Modelo que demonstra a saída dos endpoints de animal.")
+
 @Data
-public class AnimalOutput {
-	@ApiModelProperty(value = "Id do animal.",example = "1",required = true)
-	private long id;
+@ApiModel(value = "Atualização de animal",description = "Modelo usado para atualizar parcialmente o animal. Todos os campos desse modelo podem ser atualizados.")
+public class AnimalInputAtualizacao {
 	@ApiModelProperty(value = "Campo que informa se o animal está em período de lactação",example = "false",required = true)
 	private Boolean isLactacao;
 	@ApiModelProperty(value = "Campo que indica se o animal está prenho.",example = "true",required = true)

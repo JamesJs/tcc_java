@@ -25,9 +25,9 @@ public class EncontrarProducaoLeitePorLote {
 	@Autowired
 	CalculaValorTotalProducaoLeite calculaValorTotalProducaoLeite;
 	
-	public HashMap<String, Object> executar(long idLote){
+	public HashMap<String, Object> executar(Long idLote){
 		
-		List<Animal> animais = animalRepository.findByloteIdLote(idLote);
+		List<Animal> animais = animalRepository.getByloteIdLote(idLote);
 		
 		List<Long> idAnimais = animais.stream().map(animal->animal.getId()).collect(Collectors.toList());
 		

@@ -44,6 +44,11 @@ public class Fazenda {
 		cochos.add(novoCocho);
 	}
 	
+	public boolean podeRemover() {
+		return cochos.isEmpty() != false;
+		
+	}
+	
 	public Cocho removerCocho(long id) {
 		Cocho findCocho = new Cocho();
 		findCocho.setId(null);

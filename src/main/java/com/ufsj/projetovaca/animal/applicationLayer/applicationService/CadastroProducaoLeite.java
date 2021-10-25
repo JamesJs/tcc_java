@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,7 @@ import com.ufsj.projetovaca.animal.domainLayer.domainServices.CalculaValorTotalP
 import com.ufsj.projetovaca.animal.domainLayer.domainServices.ValidaExisteAnimal;
 import com.ufsj.projetovaca.animal.domainLayer.models.ProducaoLeite;
 import com.ufsj.projetovaca.animal.domainLayer.repositories.ProducaoLeiteRepository;
-import com.ufsj.projetovaca.fazenda.applicationLayer.exceptions.NotFoundWithId;
+import com.ufsj.projetovaca.animal.applicationLayer.exceptions.NotFoundWithId;
 
 @Service
 public class CadastroProducaoLeite {
@@ -86,5 +87,39 @@ public class CadastroProducaoLeite {
 		return producaoLeiteOutput;
 		
 	}
+	
+	public ProducaoLeiteOutput atualizar(Long idProducaoLeite,ProducaoLeiteInput producaoLeiteInput) throws NotFoundWithId {
+		
+		Optional<ProducaoLeite> opProducaoLeite = producaoLeiteRepository.findById(idProducaoLeite);
+		
+		if(opProducaoLeite.isEmpty()) {
+			
+			throw new NotFoundWithId("Não foi encontrado uma produção com o id informado");
+			
+		}
+		
+		if(!validaExisteAnimal.execute(producaoLeiteInput.getIdAnimal())) {
+			
+			throw new NotFoundWithId("Não foi encontrado animal com o id informado");
+		}
+		
+		
+		ProducaoLeite producaoLeite = opProducaoLeite.get();
+		
+		ProducaoLeite producaoLeiteAtt = producaoLeiteAssembler.converterEntidade(producaoLeiteInput);
+		
+		
+		BeanUtils.copyProperties(producaoLeiteAtt, producaoLeite,"id");
+		
+		ProducaoLeite novaProducaoLeite = producaoLeiteRepository.save(producaoLeite);
+		
+		ProducaoLeiteOutput producaoLeiteOutput = producaoLeiteAssembler.converterOutput(novaProducaoLeite);
+		
+		return producaoLeiteOutput;
+		
+		
+		
+	}
+	
 	
 }

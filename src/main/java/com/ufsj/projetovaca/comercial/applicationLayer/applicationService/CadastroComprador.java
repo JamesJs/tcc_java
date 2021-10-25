@@ -7,13 +7,15 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ufsj.projetovaca.animal.applicationLayer.exceptions.CompradorHasCompras;
 import com.ufsj.projetovaca.comercial.applicationLayer.exceptions.InvalidTipoDeComprador;
 import com.ufsj.projetovaca.comercial.apresentationLayer.DTO.CompradorInput;
 import com.ufsj.projetovaca.comercial.apresentationLayer.DTO.CompradorOutput;
 import com.ufsj.projetovaca.comercial.apresentationLayer.assemblers.CompradorAssembler;
+import com.ufsj.projetovaca.comercial.domainLayer.domainServices.PodeDeletarComprador;
 import com.ufsj.projetovaca.comercial.domainLayer.models.Comprador;
 import com.ufsj.projetovaca.comercial.domainLayer.repositories.CompradorRepository;
-import com.ufsj.projetovaca.fazenda.applicationLayer.exceptions.NotFoundWithId;
+import com.ufsj.projetovaca.comercial.applicationLayer.exceptions.NotFoundWithId;
 
 
 @Service
@@ -25,6 +27,9 @@ public class CadastroComprador {
 	
 	@Autowired
 	CompradorRepository compradorRepository;
+	
+	@Autowired
+	PodeDeletarComprador podeDeletarComprador;
 	
 	
 	public List<CompradorOutput> listar(){
@@ -81,6 +86,33 @@ public class CadastroComprador {
 		
 		
 	}
+	
+	
+	public CompradorOutput deletar(Long idComprador) throws NotFoundWithId, CompradorHasCompras {
+		
+		Optional<Comprador> opComprador = compradorRepository.findById(idComprador);
+		
+		if(opComprador.isEmpty()) {
+			
+			throw new NotFoundWithId("Não foi encontrado um comprador com o id informado");
+			
+		}
+		
+		if(!podeDeletarComprador.execute(idComprador)) {
+			
+			throw new CompradorHasCompras("O comprador informado possui compras cadastradas no sistema");
+			
+		}
+		
+		Comprador comprador = opComprador.get();
+		
+		compradorRepository.delete(comprador);
+		
+		CompradorOutput compradorOutput = compradorAssembler.converterOutput(comprador);
+		
+		return compradorOutput;
+	}
+	
 	
 	public CompradorOutput atualizar(CompradorInput compradorInput, Long id) throws NotFoundWithId, InvalidTipoDeComprador {
 		
