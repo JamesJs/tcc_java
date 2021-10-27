@@ -71,6 +71,26 @@ public class CadastroVendedor {
 			
 	}
 	
+public VendedorOutput deletar(Long id) throws NotFoundWithId {
+		
+		Optional<Vendedor> opVendedor = vendedorRepository.findById(id);
+		
+		if(opVendedor.isEmpty()) {
+			
+			throw new NotFoundWithId("Vendedor não encontrado com o id");
+			
+		}
+		
+		Vendedor vendedor = opVendedor.get();
+		
+		vendedorRepository.delete(vendedor);
+		
+		VendedorOutput vendedorOutput = vendedorAssembler.converterOutput(vendedor);
+		
+		return vendedorOutput;
+			
+	}
+	
 	public VendedorOutput atualizar(Long id,VendedorInput vendedorInput) throws NotFoundWithId {
 		
 		Optional<Vendedor> opVendedor = vendedorRepository.findById(id);

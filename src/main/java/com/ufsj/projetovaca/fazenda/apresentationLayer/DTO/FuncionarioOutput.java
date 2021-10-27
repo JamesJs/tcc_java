@@ -14,6 +14,6 @@ public class FuncionarioOutput {
 	private String nome;
 	@ApiModelProperty(value = "Campo que indica se o funcionário está demitido.",example = "true",required = true)
 	private Boolean isDemitido;
-	private FuncaoFuncionario funcaoFuncionario;
+	private Long idFuncao;
 	private Contato contato;
 }

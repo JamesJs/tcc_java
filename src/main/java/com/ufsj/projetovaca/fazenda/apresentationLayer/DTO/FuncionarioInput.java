@@ -11,6 +11,6 @@ public class FuncionarioInput {
 	@ApiModelProperty(value = "Nome do funcionário.",example = "Thiago Baldino Moreira",required = true)
 	private String nome;
 	@ApiModelProperty(value = "Id da função do funcionário.",required = true)
-	private FuncaoFuncionario funcaoFuncionario;
+	private long idFuncao;
 	private Contato contato;
 }

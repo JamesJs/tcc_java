@@ -35,3 +35,9 @@ build/
 #config
 ./src/main/java/com/ufsj/projetovaca/config
 /src/main/java/com/ufsj/projetovaca/config
+
+#tokenGit
+/src/main/java/com/ufsj/tokenGit
+ssh.sh
+./compile.sh
+compile.sh

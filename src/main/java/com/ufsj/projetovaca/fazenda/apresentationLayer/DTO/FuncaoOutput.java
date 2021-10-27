@@ -14,5 +14,5 @@ public class FuncaoOutput {
 	@ApiModelProperty(value = "Valor do salário que o funcionário irá receber por realizar a função.",example = "3000.00",required = true)
 	private float salario;
 	@ApiModelProperty(value = "Campo que informa se a função ainda existe no sistema.",example = "false",required = true)
-	private Boolean isAtivado;
+	private Boolean ativado;
 }

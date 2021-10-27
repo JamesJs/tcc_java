@@ -1,5 +1,6 @@
 package com.ufsj.projetovaca.comercial.apresentationLayer.controllers.compraLeite;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -14,13 +16,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ufsj.projetovaca.animal.apresentationLayer.DTO.AnimalOutput;
 import com.ufsj.projetovaca.comercial.applicationLayer.applicationService.CadastroCompraLeite;
 import com.ufsj.projetovaca.comercial.apresentationLayer.DTO.CompraLeiteInput;
 import com.ufsj.projetovaca.comercial.apresentationLayer.DTO.CompraLeiteOutput;
 import com.ufsj.projetovaca.comercial.apresentationLayer.controllers.ACrudController;
 import com.ufsj.projetovaca.comercial.domainLayer.models.CompraLeite;
-import com.ufsj.projetovaca.fazenda.applicationLayer.exceptions.NotFoundWithId;
+import com.ufsj.projetovaca.comercial.applicationLayer.exceptions.NotFoundWithId;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -88,8 +89,7 @@ public class CompraLeiteController extends ACrudController<CompraLeiteInput, Com
 		
 		
 	}
-	@DeleteMapping("/{id}")
-	@Override
+	@PatchMapping("/{id}/cancelada")
 	@ApiResponses(value = {
 	        @ApiResponse(code=200, message = "Retorna a compra cancelada", response = CompraLeiteOutput.class),
 	        @ApiResponse(code=404, message = "Retorna uma mensagem de não encontrado"),
@@ -97,7 +97,7 @@ public class CompraLeiteController extends ACrudController<CompraLeiteInput, Com
 	        
 	 })
 	@ApiOperation(value = "Cancela uma compra.")
-	public ResponseEntity<?> deletar(@PathVariable Long id) {
+	public ResponseEntity<?> ativar(@PathVariable Long id) {
 		
 		try {
 			
@@ -140,6 +140,29 @@ public class CompraLeiteController extends ACrudController<CompraLeiteInput, Com
 		}catch(Exception e) {
 			
 			return erroServidor(e);
+			
+		}
+	}
+
+	@Override
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> deletar(@PathVariable Long id) {
+		try {
+			
+			CompraLeiteOutput compraLeiteOutput = cadastroCompraLeite.deletar(id);
+			
+			return ResponseEntity.status(HttpStatus.OK).body(compraLeiteOutput);
+			
+		}catch(NotFoundWithId e) {
+			
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String,String>(){/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+			{
+				put("err",e.getMessage());
+			}});
 			
 		}
 	}

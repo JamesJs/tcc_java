@@ -147,7 +147,7 @@ public class FazendaController extends ICrudController<FazendaInput, FazendaOutp
 	        @ApiResponse(code=400, message = "Retorna uma mensagem de erro de parâmetro"),
 	        
 	 })
-	@ApiOperation(value = "Realiza uma atualização a todos os parâmetros de uma fazenda.")
+	@ApiOperation(value = "Realiza a remoção de uma fazenda.")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deletar(@PathVariable Long id,@RequestParam(required = false) String force) {
 		try {

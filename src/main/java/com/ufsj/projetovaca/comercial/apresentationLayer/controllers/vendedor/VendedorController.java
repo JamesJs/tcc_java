@@ -1,5 +1,6 @@
 package com.ufsj.projetovaca.comercial.apresentationLayer.controllers.vendedor;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ufsj.projetovaca.comercial.applicationLayer.applicationService.CadastroVendedor;
+import com.ufsj.projetovaca.comercial.applicationLayer.exceptions.NotFoundWithId;
 import com.ufsj.projetovaca.comercial.apresentationLayer.DTO.VendedorInput;
 import com.ufsj.projetovaca.comercial.apresentationLayer.DTO.VendedorOutput;
 import com.ufsj.projetovaca.comercial.apresentationLayer.controllers.ACrudController;
@@ -36,10 +39,10 @@ public class VendedorController extends ACrudController<VendedorInput, VendedorO
 	
 	
 	
-	//public VendedorController() {
-	//	super();
-	//	criarConversores(VendedorOutput.class);
-	//}
+	public VendedorController() {
+		super();
+		criarConversores(VendedorOutput.class);
+	}
 	
 	
 	
@@ -92,8 +95,7 @@ public class VendedorController extends ACrudController<VendedorInput, VendedorO
 		}
 	}
 
-	@Override
-	@DeleteMapping("/{id}")
+	@PatchMapping("/{id}/ativado")
 	@ApiResponses(value = {
 	        @ApiResponse(code=200, message = "Retorna o vendedor desativado", response = VendedorOutput.class),
 	        @ApiResponse(code=404, message = "Retorna uma mensagem de não encontrado"),
@@ -101,7 +103,7 @@ public class VendedorController extends ACrudController<VendedorInput, VendedorO
 	        
 	 })
 	@ApiOperation(value = "Desativa um vendedor do sistema.")
-	public ResponseEntity<?> deletar(@PathVariable Long id) {
+	public ResponseEntity<?> desativar(@PathVariable Long id) {
 		
 		try {
 		
@@ -140,6 +142,31 @@ public class VendedorController extends ACrudController<VendedorInput, VendedorO
 			
 		}
 		
+	}
+
+
+
+	@Override
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> deletar(@PathVariable Long id) {
+		try {
+			
+			VendedorOutput vendedorOutput = cadastroVendedor.deletar(id);
+			
+			return ResponseEntity.status(HttpStatus.OK).body(vendedorOutput);
+			
+		}catch(NotFoundWithId e) {
+			
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new HashMap<String,String>(){/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+			{
+				put("err",e.getMessage());
+			}});
+			
+		}
 	}
 
 }

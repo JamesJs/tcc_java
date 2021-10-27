@@ -15,7 +15,7 @@ import com.ufsj.projetovaca.comercial.domainLayer.models.CompraLeite;
 import com.ufsj.projetovaca.comercial.domainLayer.models.Comprador;
 import com.ufsj.projetovaca.comercial.domainLayer.repositories.CompraLeiteRepository;
 import com.ufsj.projetovaca.comercial.domainLayer.repositories.CompradorRepository;
-import com.ufsj.projetovaca.fazenda.applicationLayer.exceptions.NotFoundWithId;
+import com.ufsj.projetovaca.comercial.applicationLayer.exceptions.NotFoundWithId;
 
 
 
@@ -82,6 +82,26 @@ public class CadastroCompraLeite {
 		CompraLeite novaCompraLeite = compraLeiteRepository.save(compraLeite);
 		
 		CompraLeiteOutput compraLeiteOutput = compraLeiteAssembler.converterOutput(novaCompraLeite);
+		
+		return compraLeiteOutput;
+		
+	}
+	
+	public CompraLeiteOutput deletar(long idCompraLeite) throws NotFoundWithId {
+		
+		Optional<CompraLeite> opCompraLeite = compraLeiteRepository.findById(idCompraLeite);
+		
+		if(opCompraLeite.isEmpty()) {
+			
+			throw new NotFoundWithId("Não foi encontrada uma compra com esse id");
+		
+		}
+		
+		CompraLeite compraLeite = opCompraLeite.get();
+		
+		compraLeiteRepository.delete(compraLeite);
+		
+		CompraLeiteOutput compraLeiteOutput = compraLeiteAssembler.converterOutput(compraLeite);
 		
 		return compraLeiteOutput;
 		

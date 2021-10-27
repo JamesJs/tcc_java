@@ -29,7 +29,7 @@ public class CadastroFuncionario {
 	FuncionarioAssembler funcionarioAssembler;
 	
 	public FuncionarioOutput salvar(FuncionarioInput funcionarioInput) throws NotFoundWithId {
-		long idFuncao = funcionarioInput.getFuncaoFuncionario().getIdFuncao();
+		long idFuncao = funcionarioInput.getIdFuncao();
 		
 		boolean possuiFuncao = verificaSePossuiFuncaoFuncionario.execute(idFuncao);
 		if(!possuiFuncao) {
@@ -48,7 +48,7 @@ public class CadastroFuncionario {
 		return funcionarioOutput;
 	}
 	
-	public FuncionarioOutput deletar(long id) throws NotFoundWithId {
+	public FuncionarioOutput demitir(long id) throws NotFoundWithId {
 		Optional<Funcionario> opFuncionario = funcionarioRepository.findById(id);
 		
 		if(opFuncionario.isEmpty()) {
@@ -71,9 +71,28 @@ public class CadastroFuncionario {
 		return funcionarioOutput;
 	}
 	
+	public FuncionarioOutput deletar(long id) throws NotFoundWithId {
+		Optional<Funcionario> opFuncionario = funcionarioRepository.findById(id);
+		
+		if(opFuncionario.isEmpty()) {
+			
+			throw new NotFoundWithId("Não foi encontrado um funcionario com esse id");
+		}
+			
+		
+		Funcionario funcionario = opFuncionario.get();	
+		
+		funcionarioRepository.delete(funcionario);
+		
+		FuncionarioOutput funcionarioOutput = 
+				funcionarioAssembler.converterOutput(funcionario);
+		
+		return funcionarioOutput;
+	}
+	
 	public FuncionarioOutput atualizar(FuncionarioInput funcionarioInput, long id) throws NotFoundWithId {
 		
-		long idFuncao = funcionarioInput.getFuncaoFuncionario().getIdFuncao();
+		long idFuncao = funcionarioInput.getIdFuncao();
 		
 		boolean possuiFuncao = verificaSePossuiFuncaoFuncionario.execute(idFuncao);
 		if(!possuiFuncao) {

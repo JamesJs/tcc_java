@@ -23,7 +23,7 @@ public class Funcionario {
 	@Column
 	private Boolean isDemitido;
 	@Embedded
-	private FuncaoFuncionario funcaoFuncionario;
+	private FuncaoFuncionario funcao;
 	@Embedded
 	private Contato contato;
 	

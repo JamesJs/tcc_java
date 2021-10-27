@@ -6,15 +6,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ufsj.projetovaca.animal.apresentationLayer.DTO.AnimalOutput;
 import com.ufsj.projetovaca.fazenda.applicationLayer.applicationService.CadastroFuncionario;
 import com.ufsj.projetovaca.fazenda.applicationLayer.exceptions.NotFoundWithId;
 import com.ufsj.projetovaca.fazenda.apresentationLayer.DTO.FuncionarioInput;
@@ -120,8 +119,7 @@ public class FuncionarioController extends ICrudController<FuncionarioInput,Func
 		
 	}
 	
-	@DeleteMapping("/{id}")
-	@Override
+	@PatchMapping("/{id}/demitido")
 	@ApiResponses(value = {
 	        @ApiResponse(code=200, message = "Retorna o funcionário demitido", response = FuncionarioOutput.class),
 	        @ApiResponse(code=404, message = "Retorna uma mensagem de não encontrado"),
@@ -129,10 +127,10 @@ public class FuncionarioController extends ICrudController<FuncionarioInput,Func
 	        
 	 })
 	@ApiOperation(value = "Demite um funcionário do sistema.")
-	public ResponseEntity<?> deletar(@PathVariable Long id) {
+	public ResponseEntity<?> demitir(@PathVariable Long id) {
 		try {
 			
-			FuncionarioOutput funcionarioOutput = cadastroFuncionario.deletar(id);
+			FuncionarioOutput funcionarioOutput = cadastroFuncionario.demitir(id);
 			
 			return RespostaStatus(HttpStatus.OK, funcionarioOutput);
 			
@@ -177,6 +175,29 @@ public class FuncionarioController extends ICrudController<FuncionarioInput,Func
 		}catch(Exception e) {
 			
 			return erroServidor(e);
+			
+		}
+	}
+
+	@Override
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> deletar(@PathVariable Long id) {
+		try {
+			
+			FuncionarioOutput funcionarioOutput = cadastroFuncionario.deletar(id);
+			
+			return ResponseEntity.status(HttpStatus.OK).body(funcionarioOutput);
+			
+		}catch(NotFoundWithId e) {
+			
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new HashMap<String,String>(){/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+			{
+				put("err",e.getMessage());
+			}});
 			
 		}
 	}
