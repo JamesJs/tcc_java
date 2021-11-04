@@ -12,5 +12,5 @@ public class MateriaPrimaOutput {
 	@ApiModelProperty(value = "Tipo de matéria prima.",example = "MADEIRA",required = true)
 	private String tipo;
 	@ApiModelProperty(value = "Informa se a matéria prima ainda pode ser selecionada.",example = "true",required = true)
-	private Boolean isNaoUtilizado;
+	private boolean isNaoUtilizado;
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ufsj.projetovaca.comercial.apresentationLayer.DTO.CompraLeiteConta;
 import com.ufsj.projetovaca.comercial.apresentationLayer.DTO.CompraLeiteInput;
 import com.ufsj.projetovaca.comercial.apresentationLayer.DTO.CompraLeiteOutput;
 import com.ufsj.projetovaca.comercial.apresentationLayer.assemblers.CompraLeiteAssembler;
@@ -15,6 +16,7 @@ import com.ufsj.projetovaca.comercial.domainLayer.models.CompraLeite;
 import com.ufsj.projetovaca.comercial.domainLayer.models.Comprador;
 import com.ufsj.projetovaca.comercial.domainLayer.repositories.CompraLeiteRepository;
 import com.ufsj.projetovaca.comercial.domainLayer.repositories.CompradorRepository;
+import com.ufsj.projetovaca.config.Events;
 import com.ufsj.projetovaca.comercial.applicationLayer.exceptions.NotFoundWithId;
 
 
@@ -34,6 +36,9 @@ public class CadastroCompraLeite {
 	
 	@Autowired
 	CompraLeiteAssembler compraLeiteAssembler;
+	
+	@Autowired
+	Events events;
 	
 	public List<CompraLeiteOutput> listar(){
 		
@@ -60,6 +65,10 @@ public class CadastroCompraLeite {
 		CompraLeite novaCompraLeite = compraLeiteRepository.save(compraLeite);
 		
 		CompraLeiteOutput compraLeiteOutput = compraLeiteAssembler.converterOutput(novaCompraLeite);
+		
+		CompraLeiteConta compraLeiteConta = compraLeiteAssembler.criarNovaContaLeite(novaCompraLeite);
+		
+		events.criaContaCompraLeite(compraLeiteConta,novaCompraLeite.getId());
 		
 		return compraLeiteOutput;
 		

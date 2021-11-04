@@ -3,19 +3,25 @@ package com.ufsj.projetovaca.animal.apresentationLayer.assemblers;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
 import com.ufsj.projetovaca.animal.apresentationLayer.DTO.AnimalInput;
 import com.ufsj.projetovaca.animal.apresentationLayer.DTO.AnimalInputAtualizacao;
 import com.ufsj.projetovaca.animal.apresentationLayer.DTO.AnimalOutput;
+import com.ufsj.projetovaca.animal.apresentationLayer.DTO.LoteOutput;
 import com.ufsj.projetovaca.animal.domainLayer.models.Animal;
+import com.ufsj.projetovaca.animal.domainLayer.models.Lote;
+import com.ufsj.projetovaca.animal.domainLayer.repositories.LoteRepository;
 @Service
 public class AnimalAssembler {
-	
+	@Autowired
+	LoteRepository loteRepository;
 	
 	public Animal converterEntidade(AnimalInput animalInput) {
 		ModelMapper modelMapper = new ModelMapper();
@@ -56,9 +62,45 @@ public class AnimalAssembler {
 	}
 	public AnimalOutput converterOutput(Animal animal) {
 		
-		ModelMapper modelMapper = new ModelMapper();
+		AnimalOutput animalOutput = new AnimalOutput();
 		
-		return modelMapper.map(animal, AnimalOutput.class);
+		animalOutput.setBrinco(animal.getBrinco());
+		
+		animalOutput.setId(animal.getId());
+		
+		animalOutput.setIdaAoCochoAgua(animal.getIdaAoCochoAgua());
+		
+		animalOutput.setIdaAoCochoRacao(animal.getIdaAoCochoRacao());
+		
+		animalOutput.setIdaAoCochoSal(animal.getIdaAoCochoSal());
+		
+		animalOutput.setLactacao(animal.isLactacao());
+		
+		animalOutput.setPrenha(animal.isPrenha());
+		
+		animalOutput.setVendido(animal.isVendido());
+
+		Optional<Lote> opLote = loteRepository.findById(animal.getLote().getIdLote());
+		
+		if(opLote.isEmpty() || opLote.get().getId() == 0) {
+			
+			animalOutput.setLote(null);
+			
+			return animalOutput;
+			
+		}
+		
+		LoteOutput loteOutput = new LoteOutput();
+		
+		Lote lote = opLote.get();
+		
+		loteOutput.setId(lote.getId());
+		
+		loteOutput.setNome(lote.getNome());
+		
+		animalOutput.setLote(loteOutput);
+		
+		return animalOutput;
 		
 	}
 	

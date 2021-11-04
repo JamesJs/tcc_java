@@ -13,7 +13,7 @@ public class CochoOutput {
 	@ApiModelProperty(value = "Largura do cocho em metros.",example = "1",required = true)
 	private float largura;
 	@ApiModelProperty(value = "Campo que informa se o cocho é coberto ou não.",example = "falso",required = true)
-	private Boolean isCoberto;
+	private boolean isCoberto;
 	@ApiModelProperty(value = "Id da fazenda na qual o cocho pertence.",example = "1",required = true)
 	private long idFazenda;
 	@ApiModelProperty(value = "Id da matéria prima da qual o cocho é feito.",example = "1",required = true)

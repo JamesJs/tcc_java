@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import com.ufsj.projetovaca.comercial.apresentationLayer.DTO.CompraLeiteConta;
 import com.ufsj.projetovaca.comercial.apresentationLayer.DTO.CompraLeiteInput;
 import com.ufsj.projetovaca.comercial.apresentationLayer.DTO.CompraLeiteOutput;
 import com.ufsj.projetovaca.comercial.domainLayer.models.CompraLeite;
@@ -23,6 +24,16 @@ public class CompraLeiteAssembler {
 		return modelMapper.map(compraLeiteInput, CompraLeite.class);
 		
 	}
+	
+	public CompraLeiteConta criarNovaContaLeite(CompraLeite compraLeite) {
+		CompraLeiteConta compraLeiteConta = new CompraLeiteConta();
+		compraLeiteConta.setData(compraLeite.getData());
+		compraLeiteConta.setValor(compraLeite.getValor());
+		compraLeiteConta.setIdCompra(compraLeite.getId());
+		return compraLeiteConta;
+	}
+	
+	
 	public CompraLeiteOutput converterOutput(CompraLeite compraLeite) {
 		
 		ModelMapper modelMapper = new ModelMapper();

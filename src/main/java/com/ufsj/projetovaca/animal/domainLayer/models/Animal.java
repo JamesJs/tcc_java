@@ -21,7 +21,7 @@ public class Animal {
 	private boolean isLactacao;
 	@Column
 	private boolean isPrenha;
-	@Column
+	@Column(nullable = true)
 	private String brinco;
 	@Column
 	private boolean isVendido;
@@ -53,6 +53,14 @@ public class Animal {
 		
 		this.setLote(loteAnimal);
 		
+	}
+	
+	public void vender() {
+		this.setVendido(true);
+	}
+	
+	public void cancelarVenda() {
+		this.setVendido(false);
 	}
 	
 	public void incrementaIdaAoCocho(String tipo) {

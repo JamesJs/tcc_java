@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import com.ufsj.projetovaca.comercial.domainLayer.models.enums.TipoComprador;
 import com.ufsj.projetovaca.fazenda.domainLayer.models.embedded.CochoMateriaPrima;
@@ -34,7 +36,9 @@ public class Cocho {
 	private Localizacao localizacao;
 	@Column
 	private TipoCocho tipo;
-	
+	@ManyToOne
+	@JoinColumn(name = "idFazenda")
+	private Fazenda fazenda ;
 	public boolean definirTipoCocho(String tipo) {
 		
 		if(tipo.toLowerCase().equals("racao")) {

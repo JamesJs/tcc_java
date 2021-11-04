@@ -18,7 +18,7 @@ public class FazendaOutput {
 	@ApiModelProperty(value = "Quantidade de funcionários na fazenda.",example = "10",required = true)
 	private int quantFuncionarios;
 	@ApiModelProperty(value = "Campo que informa se a fazenda foi vendida.",example = "false",required = true)
-	private Boolean isVendida;
+	private boolean isVendida;
 
 	private Localizacao localizacao;
 	

@@ -9,14 +9,20 @@ import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.ufsj.projetovaca.comercial.domainLayer.models.embedded.Animal;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+//Não usar por enquanto
+//import com.ufsj.projetovaca.comercial.domainLayer.models.embedded.Animal;
 import com.ufsj.projetovaca.comercial.domainLayer.models.embedded.CompraGadoComprador;
 
 import lombok.Data;
@@ -36,17 +42,35 @@ public class CompraGado {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date data;
 	
+	//@Column
+	//private float pesoTotal;
+	
 	@Column
-	private float pesoTotal;
+	private boolean isCancelada;
 	
 	@Embedded
 	private CompraGadoComprador comprador;
 	
-	@ElementCollection
-	@CollectionTable(name = "compraGadoAnimal",joinColumns = @JoinColumn(name = "idCompraGado"))
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name="CompraGadoAnimal",joinColumns = @JoinColumn(name="idCompraGado"))
 	private List<Animal> animais = new ArrayList<Animal>();
 	
+	public void adicionaAnimaisCompra(List<Long> ids){
+		ids.stream().forEach((id)->{
+			Animal animal = new Animal();
+			animal.setIdAnimal(id);
+		
+			this.animais.add(animal);
+		});
+	}
 	
+	public List<Long> obtemIdsAnimais(){
+		List<Long> ids = new ArrayList<Long>();
+		animais.stream().forEach((animal)->{
+			ids.add(animal.getIdAnimal());
+		});
+		return ids;
+	}
 	
 	
 }

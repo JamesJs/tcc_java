@@ -25,9 +25,9 @@ import com.ufsj.projetovaca.animal.applicationLayer.exceptions.NotFoundAtributo;
 import com.ufsj.projetovaca.animal.applicationLayer.exceptions.NotFoundWithId;
 
 
-
 @Service
-public class CadastroAnimal {	
+
+public class CadastroAnimal{	
 	
 	@Autowired
 	AnimalAssembler animalAssembler;
@@ -56,9 +56,13 @@ public class CadastroAnimal {
 		
 		//animal.relacionarComLote(animalInput.getIdLote());
 		
-		System.out.println(animal);
+		animal.InicializarNovoAnimal();
+		
+		
 		
 		Animal novoAnimal = animalRepository.save(animal);	
+		
+		
 		
 		AnimalOutput animalOutput = animalAssembler.converterOutput(novoAnimal);
 		
